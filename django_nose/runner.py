@@ -116,6 +116,13 @@ def _get_options():
     plugins_option = [o for o in options if o.get_opt_string() == '--plugins'][0]
     plugins_option._short_opts.remove('-p')
 
+    # Django 1.7 introduces a "--no-color" option in manage.py test.
+    # Do not allow Django "--no-color" to conflict
+    # with nose's "--no-color" option in rednose plugin.
+    no_color_option = [o for o in options if o.get_opt_string() == '--no-color'][0]
+    no_color_option._long_opts.remove('--no-color')
+    no_color_option._long_opts.append('--nose-no-color')
+
     django_opts = [opt.dest for opt in BaseCommand.option_list] + ['version']
     return tuple(o for o in options if o.dest not in django_opts and
                                        o.action != 'help')
